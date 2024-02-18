@@ -7,9 +7,10 @@ import HomePromotion from '@/components/home/HomePromotion.vue';
 import { useStore } from '@/stores/store';
 import { PopupType } from '@/utils/types';
 import PaymentButton from '@/components/PaymentButton.vue';
+import HomeService from "@/components/home/HomeService.vue";
 
 export default defineComponent({
-    components: { PaymentButton, HomePromotion, HomeIntro, HomeScroll, homeSlider },
+    components: {HomeService, PaymentButton, HomePromotion, HomeIntro, HomeScroll, homeSlider },
     setup() {
         const store = useStore();
         const handleClickBtn = () => {
@@ -50,6 +51,7 @@ export default defineComponent({
         </div>
         <div class="main-contents-wrapper w-full h-full flex flex-col justify-center items-center">
             <home-intro></home-intro>
+            <home-service></home-service>
             <home-promotion></home-promotion>
             <home-slider></home-slider>
             <home-scroll></home-scroll>

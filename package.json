@@ -1,10 +1,10 @@
 {
-  "name": "dirty-clinic-front",
+  "name": "dirty-clinic-admin",
   "version": "0.0.0",
   "private": true,
-  "homepage": "https://inkuksuss.github.io/dirty-clinic-front/",
+  "homepage": "https://inkuksuss.github.io/dirty-clinic-admin/",
   "scripts": {
-    "dev": "vite --port 8081",
+    "dev": "vite --port 8082",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "test:unit": "vitest",
