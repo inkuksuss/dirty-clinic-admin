@@ -27,54 +27,89 @@ body {
 }
 
 .input-wrapper {
+}
 
+input[type='checkbox'] {
+    display: none;
+}
+
+input[type='checkbox'] + label {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 1px solid $color-main-blue;
+    border-radius: 4px;
+    position: relative;
+}
+
+input[type='checkbox']:checked + label::after {
+    content: '✔';
+    font-size: 15px;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    position: absolute;
+    left: -1px;
+    top: -2px;
+    color: $color-main-blue;
 }
 
 .select-wrapper {
-    span {
-
-    }
-
-    .arrow {
-        animation: closeSpin 0.25s linear;
-        transform: rotate(0deg);
-    }
-
-    &.active {
-        .arrow {
-            animation: openSpin 0.25s linear;
-            transform: rotate(-180deg);
+    .select-box {
+        span {
         }
-    }
 
-    .select-label {
-        width: calc(100% + 3px);
+        .arrow {
+            animation: closeSpin 0.1s linear;
+            transform: rotate(0deg);
+        }
 
-        div {
-            &:hover {
-                background-color: $color-border-blue;
+        &.active {
+            border-bottom-right-radius: 0px;
+            border-bottom-left-radius: 0px;
+
+
+            .arrow {
+                animation: openSpin 0.1s linear;
+                transform: rotate(-180deg);
             }
         }
-    }
 
-    .slide-fade-enter-active,
-    .slide-fade-leave-active {
-        transition: all 0.25s ease;
-        transform: scaleY(1);
-        transform-origin: top;
-        overflow: hidden;
-    }
+        .select-label {
+            width: calc(100% + 3px);
+            border-bottom-right-radius: 8px;
+            border-bottom-left-radius: 8px;
 
-    .slide-fade-enter-from,
-    .slide-fade-leave-to {
-        transform: scaleY(0);
-    }
+            div {
+                &:hover {
+                    background-color: $color-border-blue;
+                }
+            }
+        }
 
-    .slide-fade-enter-to,
-    .slide-fade-leave-from {
-        transform: scaleY(1);
-        transform-origin: top;
+        .slide-fade-enter-active,
+        .slide-fade-leave-active {
+            transition: all 0.1s ease;
+            transform: scaleY(1);
+            transform-origin: top;
+            overflow: hidden;
+        }
+
+        .slide-fade-enter-from,
+        .slide-fade-leave-to {
+            transform: scaleY(0);
+        }
+
+        .slide-fade-enter-to,
+        .slide-fade-leave-from {
+            transform: scaleY(1);
+            transform-origin: top;
+        }
     }
+}
+
+.text-blue {
+    color: $color-main-blue !important;
 }
 
 @keyframes closeSpin {

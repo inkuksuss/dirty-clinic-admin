@@ -2,7 +2,7 @@
 import { ref, type PropType, defineComponent, computed } from 'vue';
 
 export default defineComponent({
-    name: 'ClinicInput',
+    name: 'ClinicTextArea',
     props: {
         label: { type: String as PropType<string>, required: false },
         value: { type: String as PropType<string | undefined> },
@@ -49,14 +49,14 @@ export default defineComponent({
 </script>
 
 <template>
-    <div class="input-wrapper w-full h-full flex flex-col pt-[20px]">
-        <label
+    <div class="text-area-wrapper w-full h-full flex flex-col pt-[20px]">
+        <div
             v-if="compLabel"
             class="text-[14px] font-[900] leading-[24px] text-[--color-text-black] mb-[10px]"
-            >{{ compLabel }}</label
+            >{{ compLabel }}</div
         >
-        <input
-            class="w-full h-[50px] border-[1.5px] border-[--color-border-blue] py-[17px] px-[20px] rounded-[8px]"
+        <textarea
+            class="w-full h-full border-[1.5px] border-[&#45;&#45;color-border-blue] py-[15px] px-[15px] rounded-[8px]"
             :class="readOnly ? 'bg-[--bg-color] border-0' : ''"
             :value="value"
             :placeholder="placeHolder"
@@ -64,6 +64,7 @@ export default defineComponent({
             @input="handleChangeInput"
             @keydown="handleKeyDown"
             :readonly="readOnly"
-        />
+        >
+        </textarea>
     </div>
 </template>

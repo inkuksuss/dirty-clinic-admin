@@ -2,13 +2,12 @@
 import { RouterLink, RouterView } from 'vue-router';
 import { computed, defineComponent, onMounted, onUnmounted } from 'vue';
 import ClinicHeader from '@/components/common/ClinicHeader.vue';
-import ClinicFooter from '@/components/common/ClinicFooter.vue';
 import { useStore } from '@/stores/store';
 import ClinicPopup from '@/components/common/ClinicPopup.vue';
 
 export default defineComponent({
     name: 'App',
-    components: { ClinicPopup, ClinicFooter, ClinicHeader },
+    components: { ClinicPopup, ClinicHeader },
     setup() {
         const store = useStore();
         const compOpenPopup = computed(() => store.openPopup);
@@ -39,7 +38,6 @@ export default defineComponent({
 <template>
     <clinic-header></clinic-header>
     <router-view />
-    <clinic-footer></clinic-footer>
     <clinic-popup v-if="compOpenPopup !== null"></clinic-popup>
 </template>
 

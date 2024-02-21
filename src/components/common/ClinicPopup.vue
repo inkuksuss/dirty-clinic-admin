@@ -38,6 +38,6 @@ export default defineComponent({
             class="popup-bg flex-center bg-black opacity-55 w-full h-full"
             @click="handleClickBg"
         ></div>
-        <payment-popup v-if="compPopupType === PopupType.PAYMENT"></payment-popup>
+        <payment-popup v-if="compPopupType === PopupType.RESERVATION_PAYMENT"></payment-popup>
     </div>
 </template>

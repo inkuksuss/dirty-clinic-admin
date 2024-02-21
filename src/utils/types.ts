@@ -1,4 +1,38 @@
-import Big from 'big.js';
+export enum ReservationState {
+    PAID = 'paid',
+    CANCELLED = 'cancelled',
+    FAILED = 'failed'
+}
+
+export enum ReservationType {
+    ONE_ROOM = 'ONE_ROOM',
+    HOUSE = 'HOUSE'
+}
+
+export type Reservation = {
+    id: number;
+    memberName: string;
+    reservationType: ReservationType;
+    reservationDate: string;
+    hasPromotion: boolean;
+    reservationState: ReservationState;
+    balanceAmount: string;
+    isChecked: boolean;
+    created: string;
+};
+
+export type PageType = {
+    currentPage: number;
+    totalElement: number;
+    hasNext: boolean;
+    totalPage: number;
+    viewList: number[];
+};
+
+export type SelectType = {
+    name: string;
+    value: string;
+};
 
 export type User = {
     id: string;
@@ -6,7 +40,7 @@ export type User = {
 };
 
 export enum PopupType {
-    PAYMENT = 'PAYMENT'
+    RESERVATION_PAYMENT = 'RESERVATION_PAYMENT'
 }
 
 export type ApiResponse<T> = {

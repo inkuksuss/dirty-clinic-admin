@@ -5,7 +5,7 @@
 @import '@/assets/scss/components/popup.scss';
 
 @import '@/assets/scss/views/home.scss';
-@import '@/assets/scss/views/sub.scss';
+@import '@/assets/scss/views/reservation.scss';
 
 @import '@/assets/scss/common.scss';
 @import '@/assets/scss/variables.scss';
@@ -19,16 +19,21 @@
         --full-width: 1200px;
         --body-width: 880px;
         --header-height: 80px;
+        --bg-color: #F5F7FE;
+        --bg-gray-color: #F5F5F5;
         --color-black: #000000;
         --color-gray: #eeeeee;
         --color-main: #54a3ed;
         --color-white: #ffffff;
         --color-skyblue: #E8F4FF;
         --color-hover: #2c88e1;
+        --color-red: #EB5757;
         --color-main-blue: #2c88e1;
+        --color-dark-blue: #182F89;
         --color-border-blue: #96C8F6;
         --color-text-black: #2A2A2A;
         --color-text-gray: #999999;
+        --color-text-white-gray: #828282;
     }
 }
 
