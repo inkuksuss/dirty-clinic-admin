@@ -1,7 +1,7 @@
 export enum ReservationState {
-    PAID = 'paid',
-    CANCELLED = 'cancelled',
-    FAILED = 'failed'
+    PAID = 'PAID',
+    CANCELLED = 'CANCELLED',
+    FAILED = 'FAILED'
 }
 
 export enum ReservationType {
@@ -9,22 +9,85 @@ export enum ReservationType {
     HOUSE = 'HOUSE'
 }
 
-export type Reservation = {
-    id: number;
-    memberName: string;
-    reservationType: ReservationType;
-    reservationDate: string;
-    hasPromotion: boolean;
-    reservationState: ReservationState;
+export type ReservationSummary = {
+    reservationId: string;
+    reservationPaymentId: number;
+    username: string;
+    created: Date;
+    targetDate: Date;
+    status: string;
     balanceAmount: string;
-    isChecked: boolean;
+    reservationAdminMemo: string | null;
+    paymentAdminMemo: string | null;
+    serviceAdminMemo: string | null;
+};
+
+export type ReservationAmountSummary = {
+    reservationId: string;
+    username: string;
+    serviceId: number;
+    serviceName: string | null;
+    created: Date;
+    targetDate: Date;
+    balanceAmount: string;
+    paidAmount: string;
+    cancelledAmount: string;
+    paymentCreated: Date;
+};
+
+export type Product = {
+    id: number;
+    serviceId: number;
+    structureId: number;
+    baseAmount: number;
+    depositAmount: number;
+    description: string;
+    expansion: string;
+    maxFootage: number;
+    minFootage: number;
+    perAmount: number;
+    toiletCount: number;
+    verandaCount: number;
     created: string;
+    updated: string;
+};
+
+export type ReservationPayment = {
+    id: number;
+    applyNum: string;
+    impUid: string;
+    merchantUid: string;
+    name: string;
+    paidAmount: string;
+    paidAt: string;
+    cancelledAmount: string;
+    cancelledAt: string;
+    cancelledReason: string;
+    payMethod: string;
+    pgProvider: string;
+    pgTid: string;
+    receiptUrl: string;
+    bankName: string;
+    buyerAddr: string;
+    buyerEmail: string;
+    buyerName: string;
+    buyerPostcode: string;
+    buyerTel: string;
+    cardName: string;
+    cardNumber: string;
+    cardQuota: number;
+    currency: string;
+    customData: string;
+    status: string;
+    errorMsg: string;
 };
 
 export type PageType = {
     currentPage: number;
     totalElement: number;
     hasNext: boolean;
+    hasPrev: boolean;
+    chapterNum: number;
     totalPage: number;
     viewList: number[];
 };
@@ -32,6 +95,13 @@ export type PageType = {
 export type SelectType = {
     name: string;
     value: string;
+};
+
+export type CommonCodeType = {
+    name: string;
+    id: number;
+    commonCodeType: string;
+    subCommonCodeType: string | null;
 };
 
 export type User = {

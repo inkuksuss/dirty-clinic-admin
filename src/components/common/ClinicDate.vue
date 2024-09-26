@@ -24,7 +24,7 @@ export default defineComponent({
 
         const compLocale = computed(() => ko);
 
-        const handleChangeDate = (date: Date) => {
+        const handleChangeDate = (date: any) => {
             if (props.changeHandler) props.changeHandler(date);
         };
 

@@ -4,11 +4,13 @@
 @import '@/assets/scss/components/footer.scss';
 @import '@/assets/scss/components/popup.scss';
 
-@import '@/assets/scss/views/home.scss';
 @import '@/assets/scss/views/reservation.scss';
+@import '@/assets/scss/views/review.scss';
 
 @import '@/assets/scss/common.scss';
 @import '@/assets/scss/variables.scss';
+
+@import 'vue3-timepicker/dist/VueTimepicker.css';
 
 @tailwind base;
 @tailwind components;

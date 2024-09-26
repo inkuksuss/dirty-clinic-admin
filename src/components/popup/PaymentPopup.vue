@@ -55,13 +55,13 @@ export default defineComponent({
             isOpen.value = true;
         };
 
-        const handleChangeMemo = (e: InputEvent) => {
+        const handleChangeMemo = (e: Event) => {
             const newMemo = (e.target as any).value;
             // cancelledAmount.value = newMemo;
             cancelInfo.value.cancelledMemo = newMemo;
         };
 
-        const handleChangeCancelledAmount = (e: InputEvent) => {
+        const handleChangeCancelledAmount = (e: Event) => {
             const newValue = (e.target as any).value;
             cancelInfo.value.cancelledAmount = newValue;
         };
@@ -108,7 +108,7 @@ export default defineComponent({
                 <div class="relative w-full h-full">
                     <input
                         class="w-full h-[50px] bg-[--bg-color] border-0 py-[17px] pl-[20px] pr-[35px] rounded-[8px]"
-                        :placeholder="paymentInfo.orderId"
+                        :placeholder="paymentInfo.orderId.toString()"
                         :readonly="true"
                     />
                 </div>

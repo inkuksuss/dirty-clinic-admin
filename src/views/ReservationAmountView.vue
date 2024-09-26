@@ -3,14 +3,19 @@ import { computed, defineComponent, onMounted, onUnmounted, ref } from 'vue';
 import ClinicTopBar from '@/components/common/ClinicTopbar.vue';
 import Datepicker from 'vue3-datepicker';
 import { ko } from 'date-fns/locale';
-import { ReservationState, ReservationType, type ReservationSummary } from '@/utils/types';
+import {
+    type CommonCodeType,
+    ReservationState,
+    ReservationType,
+    type ReservationAmountSummary
+} from '@/utils/types';
 import moment from 'moment';
 import router from '@/router';
 import { getPageManager, removePageManager } from '@/utils/page-manager';
 import { getApiInstance } from '@/utils/api';
 import { getPeriodAtDate } from '@/utils/common';
 
-type ReservationView = ReservationSummary & { isSelect: boolean };
+type ReservationView = ReservationAmountSummary & { isSelect: boolean };
 
 export default defineComponent({
     components: { ClinicTopBar, Datepicker },
@@ -21,28 +26,38 @@ export default defineComponent({
         const tempStartDate = ref<Date>(new Date(today.getFullYear(), today.getMonth(), 1));
         const tempEndDate = ref<Date>(today);
 
-        const searchValue = ref<string>('');
-        const lastSearchValue = ref<string>('');
         const maxLimitDate = new Date();
         const compLocale = computed(() => ko);
-        const checkAll = ref<boolean>(false);
         const reservationList = ref<ReservationView[]>([]);
         const pageViewList = ref<number[]>([]);
         const currentPageIdx = ref<number>(1);
+        const totalElements = ref<number>(0);
+        const serviceList = ref<CommonCodeType[]>([]);
+        const totalAmount = ref<string>();
+        const checkAll = ref<boolean>(false);
 
         const loadData = async () => {
-            getPageManager().init('/admin/reservation/summary');
+            getPageManager().init('/admin/reservation/amount/summary');
             let query = `&startDate=${moment(startDate.value).format(
                 'YYYY-MM-DD'
             )}&endDate=${moment(endDate.value).format('YYYY-MM-DD')}`;
-            if (lastSearchValue.value && lastSearchValue.value.trim() !== '') {
-                query = `&searchValue=${lastSearchValue.value}`;
-            }
+
             await getPageManager().loadData(query);
-            searchValue.value = lastSearchValue.value;
             pageViewList.value = getPageManager().pageList;
             reservationList.value = getPageManager().contents;
             currentPageIdx.value = getPageManager().currentPage;
+            totalElements.value = getPageManager().totalElements;
+        };
+
+        const getServiceList = () => {
+            getApiInstance()
+                .get('/common/summary?type=service_type')
+                .then((res) => {
+                    if (res.data.code === 0) {
+                        serviceList.value = res.data.data;
+                    }
+                })
+                .catch((e) => console.error(e));
         };
 
         const handleClickDelete = () => {
@@ -66,31 +81,29 @@ export default defineComponent({
                     .finally(() => {
                         checkAll.value = false;
                         loadData();
+                        getTotalAmount();
                     });
             }
         };
 
-        const handleClickAdd = () => {
-            router.push('/add/reservation');
-        };
-
         const updateByDate = async (query: string) => {
             await getPageManager().loadData(query);
-            lastSearchValue.value = searchValue.value;
             pageViewList.value = getPageManager().pageList;
             reservationList.value = getPageManager().contents;
             currentPageIdx.value = getPageManager().currentPage;
+            totalElements.value = getPageManager().totalElements;
+            getTotalAmount();
         };
 
-        const handleChangeStartDate = (_: Date | null | undefined) => {
+        const handleChangeStartDate = (_: any) => {
             if (startDate.value > endDate.value) {
                 window.alert('시작일이 종료일보다 클 수 없습니다.');
                 startDate.value = endDate.value;
                 return;
             }
 
-            if (getPeriodAtDate(startDate.value, endDate.value) > 60) {
-                window.alert('검색 범위는 60일을 초과할 수 없습니다.');
+            if (getPeriodAtDate(startDate.value, endDate.value) > 31) {
+                window.alert('검색 범위는 31일을 초과할 수 없습니다.');
                 startDate.value = tempStartDate.value;
                 return;
             }
@@ -99,22 +112,18 @@ export default defineComponent({
             let query = `&startDate=${moment(startDate.value).format(
                 'YYYY-MM-DD'
             )}&endDate=${moment(endDate.value).format('YYYY-MM-DD')}`;
-            if (searchValue.value && searchValue.value.trim() !== '') {
-                query += `&searchValue=${searchValue.value}`;
-            }
-
             updateByDate(query);
         };
 
-        const handleChangeEndDate = (_: Date | null | undefined) => {
+        const handleChangeEndDate = (_: any) => {
             if (startDate.value > endDate.value) {
                 window.alert('종료일이 시작일보다 작을 수 없습니다.');
                 endDate.value = startDate.value;
                 return;
             }
 
-            if (getPeriodAtDate(startDate.value, endDate.value) > 60) {
-                window.alert('검색 범위는 60일을 초과할 수 없습니다.');
+            if (getPeriodAtDate(startDate.value, endDate.value) > 31) {
+                window.alert('검색 범위는 31일을 초과할 수 없습니다.');
                 endDate.value = tempEndDate.value;
                 return;
             }
@@ -123,62 +132,30 @@ export default defineComponent({
             let query = `&startDate=${moment(startDate.value).format(
                 'YYYY-MM-DD'
             )}&endDate=${moment(endDate.value).format('YYYY-MM-DD')}`;
-            if (searchValue.value && searchValue.value.trim() !== '') {
-                query += `&searchValue=${searchValue.value}`;
-            }
-
             updateByDate(query);
-        };
-
-        const handleChangeKeyword = (e: Event) => {
-            searchValue.value = (e.target as any).value;
-        };
-
-        const doSearchByKeyword = async () => {
-            const query = `&searchValue=${searchValue.value}&startDate=${moment(
-                startDate.value
-            ).format('YYYY-MM-DD')}&endDate=${moment(endDate.value).format('YYYY-MM-DD')}`;
-            lastSearchValue.value = searchValue.value;
-            await getPageManager().loadData(query);
-            pageViewList.value = getPageManager().pageList;
-            reservationList.value = getPageManager().contents;
-            currentPageIdx.value = getPageManager().currentPage;
-        };
-
-        const handleEnterDown = (e: KeyboardEvent): void => {
-            if (e.key === 'Enter') {
-                if (e.isComposing || e.keyCode === 229) return;
-                doSearchByKeyword();
-            }
         };
 
         const handleClickPageArrow = async (isLeft: boolean) => {
             let query = `&startDate=${moment(startDate.value).format(
                 'YYYY-MM-DD'
             )}&endDate=${moment(endDate.value).format('YYYY-MM-DD')}`;
-            if (lastSearchValue.value && lastSearchValue.value.trim() !== '') {
-                query += `&searchValue=${lastSearchValue.value}`;
-            }
-            searchValue.value = lastSearchValue.value;
             if (isLeft) await getPageManager().goPrevChapter(query);
             else await getPageManager().goNextChapter(query);
             currentPageIdx.value = getPageManager().currentPage;
             pageViewList.value = getPageManager().pageList;
             reservationList.value = getPageManager().contents;
+            totalElements.value = getPageManager().totalElements;
         };
 
         const handleClickPageNumber = async (v: number) => {
             let query = `&startDate=${moment(startDate.value).format(
                 'YYYY-MM-DD'
             )}&endDate=${moment(endDate.value).format('YYYY-MM-DD')}`;
-            if (lastSearchValue.value && lastSearchValue.value.trim() !== '') {
-                query += `&searchValue=${lastSearchValue.value}`;
-            }
-            searchValue.value = lastSearchValue.value;
             await getPageManager().movePage(v, query);
             pageViewList.value = getPageManager().pageList;
             reservationList.value = getPageManager().contents;
             currentPageIdx.value = getPageManager().currentPage;
+            totalElements.value = getPageManager().totalElements;
         };
 
         const handleChangeCheckAll = () => {
@@ -189,8 +166,28 @@ export default defineComponent({
             router.push(`/reservation/${id}`);
         };
 
-        onMounted(() => {
-            loadData();
+        const getTotalAmount = () => {
+            getApiInstance()
+                .get(
+                    `/admin/reservation/total-amount?startDate=${moment(startDate.value).format(
+                        'YYYY-MM-DD'
+                    )}&endDate=${moment(endDate.value).format('YYYY-MM-DD')}`
+                )
+                .then((res) => {
+                    console.log(res);
+                    if (res.data.code === 0) {
+                        totalAmount.value = res.data.data.toLocaleString();
+                    } else {
+                        window.alert(res.data.message);
+                    }
+                })
+                .catch((e) => console.error(e));
+        };
+
+        onMounted(async () => {
+            await getServiceList();
+            await loadData();
+            getTotalAmount();
         });
 
         onUnmounted(() => {
@@ -203,19 +200,19 @@ export default defineComponent({
             maxLimitDate,
             compLocale,
             checkAll,
-            searchValue,
+            totalAmount,
             reservationList,
             ReservationType,
             ReservationState,
             pageViewList,
             currentPageIdx,
+            serviceList,
+            totalElements,
+            today,
             moment,
             handleClickDelete,
-            handleClickAdd,
             handleChangeStartDate,
             handleChangeEndDate,
-            handleChangeKeyword,
-            handleEnterDown,
             handleClickPageArrow,
             handleClickPageNumber,
             handleChangeCheckAll,
@@ -228,38 +225,32 @@ export default defineComponent({
 <template>
     <clinic-top-bar></clinic-top-bar>
     <div class="reservation-wrapper bg-[--bg-color] ml-[22%] px-[20px] flex items-center flex-col">
-        <div class="reservation-contents max-w-[900px] bg-[--color-white] rounded-[8px] h-max">
+        <div
+            class="reservation-contents max-w-[900px] w-[900px] bg-[--color-white] rounded-[8px] h-max"
+        >
             <div class="title-wrapper w-full h-[80px] px-[20px] flex justify-between items-center">
                 <span class="text-[22px] font-[700] leading-[26px] text-[--color-text-black]"
-                    >예약 관리</span
+                    >예약금 관리</span
                 >
-                <div class="flex justify-between">
+                <div class="flex">
                     <div
                         class="w-[62px] h-[40px] mr-[10px] border-[1px] border-[--color-main-blue] rounded-[4px] flex-center text-[14px] font-[600] text-[--color-main-blue]"
                         @click="handleClickDelete"
                     >
                         삭제
                     </div>
-                    <div
-                        class="w-[62px] h-[40px] mr-[10px] border-[1px] bg-[--color-main-blue] rounded-[4px] flex-center text-[14px] font-[600] text-[--color-white]"
-                        @click="handleClickAdd"
-                    >
-                        + 등록
-                    </div>
                 </div>
             </div>
-            <div class="search-wrapper bg-[--bg-gray-color] h-[98px] flex justify-between">
-                <div class="date-wrapper flex flex-col py-[15px] pl-[20px] w-[400px]">
-                    <div
-                        class="text-[14px] font-[400] text-[--color-text-black] leading-[17px] mb-[11px]"
-                    >
-                        서비스 예약날짜
-                    </div>
+            <div
+                class="search-wrapper bg-[--bg-gray-color] flex justify-between py-[15px] pl-[20px]"
+            >
+                <div class="date-wrapper flex flex-col w-[400px] h-[40px]">
                     <div class="date-box flex justify-between items-center">
                         <div class="relative w-[185px] h-[40px]">
                             <Datepicker
                                 class="w-full h-[40px] border-[1px] rounded-[4px] px-[12px]"
                                 v-model="startDate"
+                                :upper-limit="endDate"
                                 :locale="compLocale"
                                 @update:modelValue="handleChangeStartDate"
                             ></Datepicker>
@@ -272,6 +263,7 @@ export default defineComponent({
                         <div class="relative w-[185px] h-[40px]">
                             <Datepicker
                                 class="w-full h-[40px] border-[1px] rounded-[4px] px-[12px]"
+                                :upper-limit="today"
                                 v-model="endDate"
                                 :locale="compLocale"
                                 @update:modelValue="handleChangeEndDate"
@@ -283,27 +275,41 @@ export default defineComponent({
                         </div>
                     </div>
                 </div>
-                <div class="search-input flex flex-col items-start py-[15px] mx-[20px] w-[460px]">
-                    <span
-                        class="text-[14px] font-[400] text-[--color-text-black] leading-[17px] mb-[11px]"
-                        >검색</span
+                <div class="w-full h-[40px] flex items-center">
+                    <span class="text-[14px] font-[500] text-[--color-text-gray] pl-[15px]"
+                        >총 예약금 결제 금액은 온라인 결제 완료된 금액으로 노출됩니다.</span
                     >
-                    <div class="search-input w-full relative flex justify-between items-center">
-                        <img
-                            class="absolute w-[16px] h-[16px] top-[12px] left-[8px]"
-                            src="@/assets/images/icons/search@1x.svg"
-                        />
-                        <input
-                            :value="searchValue"
-                            class="w-full h-[40px] rounded-[4px] pl-[32px]"
-                            placeholder="예약자명을 검색하세요."
-                            @input="handleChangeKeyword"
-                            @keydown="handleEnterDown"
-                        />
-                    </div>
                 </div>
             </div>
             <div class="reservation-body w-full h-max">
+                <div class="amount-wrapper grid grid-cols-2 px-[20px] gap-x-[10px] py-[20px]">
+                    <div
+                        class="amount-box px-[25px] py-[30px] h-[160px] flex flex-col justify-between rounded-[8px]"
+                    >
+                        <div class="flex w-full justify-between items-center">
+                            <div class="text-[16px] font-[600]">예약 건</div>
+                            <img src="@/assets/images/common/sharp@1x.png" />
+                        </div>
+                        <div class="flex justify-between items-center mt-[30px]">
+                            <div class="text-[32px] font-[700]">{{ totalElements }}</div>
+                            <div class="text-[22px] font-[700]">건</div>
+                        </div>
+                    </div>
+                    <div
+                        class="amount-box px-[25px] py-[30px] h-[160px] flex flex-col justify-between rounded-[8px]"
+                    >
+                        <div class="flex w-full justify-between items-center">
+                            <div class="text-[16px] font-[600]">총 예약금 결재 금액</div>
+                            <img src="@/assets/images/common/card@1x.png" />
+                        </div>
+                        <div class="flex justify-between items-center mt-[30px]">
+                            <div class="text-[32px] font-[700] text-[#ff2b2b]">
+                                {{ totalAmount }}
+                            </div>
+                            <div class="text-[22px] font-[700] text-[#ff2b2b]">원</div>
+                        </div>
+                    </div>
+                </div>
                 <div
                     class="body-header w-full flex px-[25px] h-[45px] items-center border-b-[1px] border-[#EEEEEE] mb-[10px] justify-between"
                 >
@@ -324,11 +330,6 @@ export default defineComponent({
                             번호
                         </div>
                         <div
-                            class="w-[64px] text-center text-[14px] font-[400] text-[--color-text-white-gray] text-center"
-                        >
-                            구분
-                        </div>
-                        <div
                             class="w-[126px] text-center text-[14px] font-[400] text-[--color-text-white-gray] text-center"
                         >
                             예약자 명
@@ -336,7 +337,7 @@ export default defineComponent({
                         <div
                             class="w-[89px] text-center text-[14px] font-[400] text-[--color-text-white-gray] text-center"
                         >
-                            예약 일자
+                            서비스
                         </div>
                         <div
                             class="w-[137px] text-center text-[14px] font-[400] text-[--color-text-white-gray] text-center"
@@ -344,9 +345,9 @@ export default defineComponent({
                             서비스 예약날짜
                         </div>
                         <div
-                            class="w-[128px] text-center text-[14px] font-[400] text-[--color-text-white-gray] text-center"
+                            class="w-[111px] text-center text-[14px] font-[400] text-[--color-text-white-gray] text-center"
                         >
-                            예약금 결제
+                            예약금
                         </div>
                         <div
                             class="w-[111px] text-center text-[14px] font-[400] text-[--color-text-white-gray] text-center"
@@ -354,9 +355,9 @@ export default defineComponent({
                             잔금 금액
                         </div>
                         <div
-                            class="w-[62px] text-center text-[14px] font-[400] text-[--color-text-white-gray] text-center"
+                            class="w-[111px] text-center text-[14px] font-[400] text-[--color-text-white-gray] text-center"
                         >
-                            메모 여부
+                            예약금 결제일
                         </div>
                     </div>
                 </div>
@@ -366,7 +367,7 @@ export default defineComponent({
                         :key="reservation.reservationId"
                         class="body-content py-[14px] flex items-center cursor-pointer justify-between px-[25px]"
                     >
-                        <div class="w-[45px] flex justify-start items-center">
+                        <div class="w-[45px] flex justify-start">
                             <input
                                 class="w-[20px] h-[20px]"
                                 :id="'check_one_' + idx"
@@ -380,67 +381,36 @@ export default defineComponent({
                             class="flex justify-between w-full"
                         >
                             <div
-                                class="w-[64px] min-w-[64px] text-[14px] font-[400] leading-[17px] text-[--color-text-black] text-center flex items-center justify-center"
+                                class="w-[64px] min-w-[64px] text-[14px] font-[400] leading-[17px] text-[--color-text-black] text-center"
                             >
-                                <span>{{ (currentPageIdx - 1) * 7 + idx + 1 }}</span>
+                                {{ (currentPageIdx - 1) * 7 + idx + 1 }}
                             </div>
                             <div
-                                class="w-[64px] min-w-[64px] text-[14px] font-[700] leading-[17px] text-[--color-text-black] text-center flex items-center justify-center"
+                                class="w-[126px] min-w-[126px] text-[14px] font-[400] leading-[17px] text-[--color-text-black] text-center truncate"
                             >
-                                <span>{{
-                                    reservation.reservationPaymentId ? '예약' : '견적'
-                                }}</span>
+                                {{ reservation.username ?? '-' }}
                             </div>
                             <div
-                                class="w-[126px] min-w-[126px] text-[14px] font-[400] leading-[17px] text-[--color-text-black] text-center truncate flex items-center justify-center"
+                                class="w-[89px] min-w-[89px] text-[14px] font-[400] leading-[17px] text-[--color-text-black] text-center"
                             >
-                                <span>{{ reservation.username ?? '' }}</span>
+                                {{ reservation.serviceName ?? '-' }}
                             </div>
                             <div
-                                class="w-[89px] min-w-[89px] text-[14px] font-[400] leading-[17px] text-[--color-text-black] text-center flex items-center justify-center"
+                                class="w-[137px] min-w-[137px] text-[14px] font-[400] leading-[17px] text-[--color-main-blue] text-center"
                             >
-                                <span>{{ moment(reservation.created).format('YY.MM.DD') }}</span>
+                                {{ moment(reservation.targetDate).format('YY.MM.DD') }}
                             </div>
                             <div
-                                class="w-[137px] min-w-[137px] text-[14px] font-[400] leading-[17px] text-[--color-main-blue] text-center flex items-center justify-center"
+                                class="w-[111px] min-w-[111px] text-[14px] font-[400] leading-[17px] text-[--color-text-black] flex-center"
                             >
-                                <span>{{ moment(reservation.targetDate).format('YY.MM.DD') }}</span>
+                                {{
+                                    reservation.paidAmount
+                                        ? reservation.paidAmount.toLocaleString()
+                                        : '-'
+                                }}
                             </div>
                             <div
-                                class="w-[128px] min-w-[128px] text-[14px] font-[400] leading-[17px] text-[--color-text-black] flex-center"
-                            >
-                                <div
-                                    v-if="reservation.status === ReservationState.PAID"
-                                    class="w-[65px] h-[25px] bg-[--color-main-blue] rounded-[8px] text-[--color-white] font-[700] text-[14px] text-center py-[2.5px] leading-[20px]"
-                                >
-                                    결제완료
-                                </div>
-                                <div
-                                    v-else-if="reservation.status === ReservationState.CANCELLED"
-                                    class="w-[65px] h-[25px] bg-[--color-red] rounded-[8px] text-[--color-white] font-[700] text-[14px] text-center py-[2.5px] leading-[20px]"
-                                >
-                                    취소
-                                </div>
-                                <div
-                                    v-else-if="!reservation.status"
-                                    class="w-[65px] h-[25px] text-[--color-text-gray] font-[700] text-[14px] text-center py-[2.5px] leading-[20px]"
-                                >
-                                    -
-                                </div>
-                                <div
-                                    v-else
-                                    class="w-[65px] h-[25px] bg-[--color-red] rounded-[8px] text-[--color-white] font-[700] text-[14px] text-center py-[2.5px] leading-[20px]"
-                                >
-                                    미완료
-                                </div>
-                            </div>
-                            <div
-                                class="flex-center w-[111px] min-w-[111px] text-[14px] font-[700] text-center truncate"
-                                :class="
-                                    reservation.balanceAmount
-                                        ? 'text-[--color-main-blue]'
-                                        : 'text-[--color-text-gray]'
-                                "
+                                class="flex-center w-[111px] min-w-[111px] text-[14px] font-[700] leading-[17px] text-[--color-main-blue] text-center truncate"
                             >
                                 {{
                                     reservation.balanceAmount
@@ -449,20 +419,11 @@ export default defineComponent({
                                 }}
                             </div>
                             <div
-                                class="w-[62px] min-w-[62px] text-[14px] font-[400] leading-[25px] text-center"
-                                :class="
-                                    reservation.reservationAdminMemo ||
-                                    reservation.paymentAdminMemo ||
-                                    reservation.serviceAdminMemo
-                                        ? 'text-[--color-main-blue]'
-                                        : 'text-[--color-text-gray]'
-                                "
+                                class="w-[111px] min-w-[111px] text-[14px] font-[700] leading-[17px] text-[--color-main-blue] text-center"
                             >
                                 {{
-                                    reservation.reservationAdminMemo ||
-                                    reservation.paymentAdminMemo ||
-                                    reservation.serviceAdminMemo
-                                        ? '사용'
+                                    reservation.created
+                                        ? moment(reservation.created).format('YY.MM.DD')
                                         : '-'
                                 }}
                             </div>
@@ -507,4 +468,11 @@ export default defineComponent({
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.amount-box {
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.12),
+        0 1px 2px rgba(0, 0, 0, 0.24);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+</style>

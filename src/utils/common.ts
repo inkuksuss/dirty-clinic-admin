@@ -1,6 +1,3 @@
-import { CONSTANTS } from '../../constants';
-import { type User } from '@/utils/types';
-
 export const getUuid = (): string => {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         const r = (Math.random() * 16) | 0,
@@ -9,40 +6,28 @@ export const getUuid = (): string => {
     });
 };
 
-export const loadLocalStorage = (key: string): any => {
-    const data = window.localStorage.getItem(encodeString(key));
-    if (data) return JSON.parse(decodeString(data));
+export const getCookie = (name: string) => {
+    console.log(document.cookie);
+};
 
-    return null;
+export const loadLocalStorage = (key: string): any => {
+    return window.localStorage.getItem(key);
 };
 
 export const saveLocalStorage = (key: string, value: string) => {
-    window.localStorage.setItem(encodeString(key), encodeString(value));
+    window.localStorage.setItem(key, value);
 };
 
 export const removeLocalStorage = (key: string) => {
-    window.localStorage.removeItem(encodeString(key));
+    window.localStorage.removeItem(key);
 };
 
 export const clearLocalStorage = () => {
     window.localStorage.clear();
 };
 
-export const encodeString = (v: string): string => {
-    return encodeURIComponent(v);
-};
+export const getPeriodAtDate = (start: Date, end: Date) => {
+    const millisecondsInOneDay = 24 * 60 * 60 * 1000;
 
-export const decodeString = (v: string): string => {
-    return decodeURIComponent(v);
-};
-
-export const getUserInfo = (): User => {
-    const loadUserInfo = loadLocalStorage(CONSTANTS.KEY.USER_INFO);
-
-    return loadUserInfo ?? undefined;
-};
-
-export const getUserId = (): string => {
-    const loadUserInfo = loadLocalStorage(CONSTANTS.KEY.USER_INFO);
-    return loadUserInfo ? loadUserInfo.id : '1';
+    return Math.floor((end.getTime() - start.getTime()) / millisecondsInOneDay);
 };

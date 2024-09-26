@@ -1,6 +1,6 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import vClickOutside from 'click-outside-vue3';
 import { useStore } from '@/stores/store';
 
@@ -16,12 +16,12 @@ export default defineComponent({
         clickOutside: vClickOutside.directive
     },
     setup() {
-        const store = useStore();
         const router = useRouter();
+        const route = useRoute();
 
         const categoryList = ref<Array<Category>>([
             { title: '예약 관리', isSelect: false, link: '/reservation' },
-            { title: '매출 관리', isSelect: false, link: '/sale' },
+            { title: '예약금 관리', isSelect: false, link: '/amount' },
             { title: '후기 관리', isSelect: false, link: '/review' }
         ]);
 
@@ -31,31 +31,44 @@ export default defineComponent({
             router.push(category.link);
         };
 
+        const handleClickLogo = () => {
+            router.push('/');
+        };
+
         const updateSelect = () => {
-            categoryList.value
-                .filter((v) => window.location.href.indexOf(v.link) > -1)
-                .forEach((v) => (v.isSelect = true));
+            categoryList.value.forEach((category) => (category.isSelect = false));
+
+            const findCategory = categoryList.value.find(
+                (v) => window.location.href.indexOf(v.link) > -1
+            );
+            if (findCategory) {
+                findCategory.isSelect = true;
+            }
         };
 
         onMounted(() => {
             updateSelect();
         });
 
-        onUnmounted(() => {});
+        watch(route, () => {
+            updateSelect();
+        });
 
         return {
             categoryList,
-            handleClick
+            handleClick,
+            handleClickLogo
         };
     }
 });
 </script>
 
 <template>
-    <header
-        class="header-wrapper bg-[--color-white] fixed left-0 top-0 w-[22%] h-screen"
-    >
-        <div class="logo-wrapper mt-[20px] ml-[20px] mb-[40px] w-[133px] h-[42px]">
+    <header class="header-wrapper bg-[--color-white] fixed left-0 top-0 w-[22%] h-screen">
+        <div
+            class="logo-wrapper mt-[20px] ml-[20px] mb-[40px] w-[133px] h-[42px]"
+            @click="handleClickLogo"
+        >
             <img class="w-full h-full" src="@/assets/images/common/header_logo@1x.jpg" />
         </div>
         <div class="header-contents px-[20px]">

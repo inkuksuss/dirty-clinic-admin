@@ -6,6 +6,7 @@ export default defineComponent({
     props: {
         label: { type: String as PropType<string>, required: false },
         value: { type: String as PropType<string | undefined> },
+        type: { type: String as PropType<string>, required: false },
         placeHolder: { type: String as PropType<string>, required: false },
         length: { type: Number as PropType<number>, required: false },
         readOnly: { type: Boolean as PropType<boolean>, default: false },
@@ -59,6 +60,7 @@ export default defineComponent({
             class="w-full h-[50px] border-[1.5px] border-[--color-border-blue] py-[17px] px-[20px] rounded-[8px]"
             :class="readOnly ? 'bg-[--bg-color] border-0' : ''"
             :value="value"
+            :type="type"
             :placeholder="placeHolder"
             :maxlength="length"
             @input="handleChangeInput"

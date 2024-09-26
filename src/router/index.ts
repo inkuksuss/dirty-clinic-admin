@@ -14,21 +14,43 @@ const router = createRouter({
             component: () => import('@/views/ReservationView.vue')
         },
         {
+            path: '/amount',
+            name: 'reservationAmount',
+            component: () => import('@/views/ReservationAmountView.vue')
+        },
+        {
             path: '/reservation/:id',
             name: 'reservationDetail',
             component: () => import('@/views/ReservationDetailView.vue')
         },
         {
-            path: '/sale',
-            name: 'sale',
-            component: () => import('@/views/SaleView.vue')
+            path: '/add/reservation',
+            name: 'addReservation',
+            component: () => import('@/views/AddReservationView.vue')
         },
         {
             path: '/review',
             name: 'review',
             component: () => import('@/views/ReviewView.vue')
+        },
+        {
+            path: '/add/review',
+            name: 'addReview',
+            component: () => import('@/views/AddReviewView.vue')
+        },
+        {
+            path: '/review/:id',
+            name: 'reviewDetail',
+            component: () => import('@/views/ReviewDetailView.vue')
         }
     ]
 });
+
+// router.beforeEach((to, from, next) => {
+//     getCookie('');
+//     console.log('to = ' + JSON.stringify(to));
+//     console.log('from = ' + JSON.stringify(from));
+//     console.log('next = ' + JSON.stringify(next));
+// });
 
 export default router;
