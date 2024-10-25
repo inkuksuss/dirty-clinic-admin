@@ -226,7 +226,7 @@ export default defineComponent({
     <clinic-top-bar></clinic-top-bar>
     <div class="reservation-wrapper bg-[--bg-color] ml-[22%] px-[20px] flex items-center flex-col">
         <div
-            class="reservation-contents max-w-[900px] w-[900px] bg-[--color-white] rounded-[8px] h-max"
+            class="reservation-contents min-w-[900px] w-[95%] bg-[--color-white] rounded-[8px] h-max"
         >
             <div class="title-wrapper w-full h-[80px] px-[20px] flex justify-between items-center">
                 <span class="text-[22px] font-[700] leading-[26px] text-[--color-text-black]"
@@ -288,7 +288,7 @@ export default defineComponent({
                     >
                         <div class="flex w-full justify-between items-center">
                             <div class="text-[16px] font-[600]">예약 건</div>
-                            <img src="@/assets/images/common/sharp@1x.png" />
+                            <img src="@/assets/images/common/sharp@1x.png" class="w-[32px] h-[32px]"/>
                         </div>
                         <div class="flex justify-between items-center mt-[30px]">
                             <div class="text-[32px] font-[700]">{{ totalElements }}</div>
@@ -300,7 +300,7 @@ export default defineComponent({
                     >
                         <div class="flex w-full justify-between items-center">
                             <div class="text-[16px] font-[600]">총 예약금 결재 금액</div>
-                            <img src="@/assets/images/common/card@1x.png" />
+                            <img src="@/assets/images/common/card@1x.png" class="w-[32px] h-[32px]"/>
                         </div>
                         <div class="flex justify-between items-center mt-[30px]">
                             <div class="text-[32px] font-[700] text-[#ff2b2b]">

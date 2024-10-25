@@ -92,8 +92,8 @@ export default defineComponent({
         };
 
         const handleClickSave = () => {
-            if (footage.value && !Number.isInteger(parseFloat(footage.value))) {
-                window.alert('공급면적은 정수만 가능합니다.');
+            if (footage.value && footage.value?.slice(-1) === '.') {
+                window.alert('공급면적 형식이 숫자가 아닙니다.');
                 return;
             }
 
@@ -112,7 +112,7 @@ export default defineComponent({
                 .then((res) => {
                     if (res.data.code === 0) {
                         window.alert('저장되었습니다.');
-                        // router.push(`/reservation/${reservationDetail.value?.reservationId}`);
+                        router.push('/reservation');
                     } else {
                         window.alert(res.data.message);
                     }
@@ -225,33 +225,40 @@ export default defineComponent({
         };
 
         const handleClickCancel = () => {
+            if (reservationDetail.value?.reservationStatus !== ReservationState.PAID) {
+                window.alert('이미 취소된 결제건입니다.');
+                return;
+            }
+
             getApiInstance()
                 .post('/admin/reservation/cancel', {
                     id: reservationDetail.value?.reservationId,
                     cancelledAdminMemo: cancelledAdminMemo.value
                 })
                 .then((res) => {
-                    console.log(res);
                     if (res.data.code === 0) {
                         window.alert('취소 완료되었습니다.');
                         openPopup.value = false;
+                        loadData();
                     } else {
                         window.alert(res.data.message);
                     }
                 })
-                .catch((e) => console.log(e));
+                .catch((e) => {
+                    window.alert('결제 취소를 실패하였습니다.');
+                    console.error(e);
+                });
         };
 
         const handleChangeCancelMemo = (v: string | undefined) => {
             cancelledAdminMemo.value = v;
         };
 
-        onMounted(async () => {
+        const loadData = async () => {
             const id = route.params.id;
             if (id) {
                 try {
                     const detailRes = await getApiInstance().get(`/admin/reservation/detail/${id}`);
-                    console.log(detailRes);
                     if (detailRes.data.code === 0) {
                         reservationDetail.value = detailRes.data.data;
                         if (reservationDetail.value) {
@@ -325,6 +332,10 @@ export default defineComponent({
                     console.error(e);
                 }
             }
+        };
+
+        onMounted(async () => {
+            await loadData();
         });
 
         return {
@@ -571,9 +582,9 @@ export default defineComponent({
                                     reservationDetail?.reservationStatus === ReservationState.PAID
                                         ? '결제완료'
                                         : reservationDetail.reservationStatus ===
-                                            ReservationState.FAILED
-                                          ? '미완료'
-                                          : '취소'
+                                            ReservationState.CANCELLED
+                                          ? '취소'
+                                          : '미완료'
                                 }}
                             </div>
                         </div>

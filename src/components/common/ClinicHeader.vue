@@ -1,8 +1,9 @@
 <script lang="ts">
-import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from 'vue';
+import { defineComponent, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import vClickOutside from 'click-outside-vue3';
-import { useStore } from '@/stores/store';
+import { CONSTANTS } from '../../../constants';
+import { loadLocalStorage } from '@/utils/common';
 
 type Category = {
     title: string;
@@ -26,12 +27,20 @@ export default defineComponent({
         ]);
 
         const handleClick = (category: Category) => {
-            categoryList.value.forEach((v) => (v.isSelect = false));
-            category.isSelect = true;
-            router.push(category.link);
+            if (loadLocalStorage(CONSTANTS.KEY.UT)) {
+                categoryList.value.forEach((v) => (v.isSelect = false));
+                category.isSelect = true;
+                router.push(category.link);
+            } else {
+                router.push('/');
+            }
         };
 
         const handleClickLogo = () => {
+            if (loadLocalStorage(CONSTANTS.KEY.UT)) {
+                return;
+            }
+
             router.push('/');
         };
 

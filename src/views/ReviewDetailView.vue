@@ -10,6 +10,8 @@ import { getApiInstance } from '@/utils/api';
 import router from '@/router';
 import { useRoute } from 'vue-router';
 
+
+
 export default defineComponent({
     components: { QuillEditor, ClinicTopBar, ClinicInput },
     setup() {
@@ -19,7 +21,7 @@ export default defineComponent({
         const created = ref<string>();
         const title = ref<string>();
         const content = ref<string>();
-        const modules: unknown = {
+        const modules = {
             name: 'imageUploader',
             module: ImageUploader,
             options: {

@@ -1,6 +1,5 @@
 <script lang="ts">
-import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { defineComponent, onMounted, onUnmounted } from 'vue';
 import vClickOutside from 'click-outside-vue3';
 import { useStore } from '@/stores/store';
 import { removeLocalStorage } from '@/utils/common';

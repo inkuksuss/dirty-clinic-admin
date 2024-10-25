@@ -228,7 +228,7 @@ export default defineComponent({
 <template>
     <clinic-top-bar></clinic-top-bar>
     <div class="reservation-wrapper bg-[--bg-color] ml-[22%] px-[20px] flex items-center flex-col">
-        <div class="reservation-contents max-w-[900px] bg-[--color-white] rounded-[8px] h-max">
+        <div class="reservation-contents min-w-[900px] w-[95%] bg-[--color-white] rounded-[8px] h-max">
             <div class="title-wrapper w-full h-[80px] px-[20px] flex justify-between items-center">
                 <span class="text-[22px] font-[700] leading-[26px] text-[--color-text-black]"
                     >예약 관리</span
@@ -248,7 +248,7 @@ export default defineComponent({
                     </div>
                 </div>
             </div>
-            <div class="search-wrapper bg-[--bg-gray-color] h-[98px] flex justify-between">
+            <div class="search-wrapper bg-[--bg-gray-color] h-[98px] flex justify-start">
                 <div class="date-wrapper flex flex-col py-[15px] pl-[20px] w-[400px]">
                     <div
                         class="text-[14px] font-[400] text-[--color-text-black] leading-[17px] mb-[11px]"

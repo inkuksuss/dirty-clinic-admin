@@ -21,7 +21,7 @@ export class PageManager<T> implements PageManagerInterface<T> {
     private _pageList: Array<number> = [];
     private _contents: Array<T> = [];
     private _isReady: boolean = false;
-    private _isDebug = true;
+    private _isDebug = false;
 
     init(defaultUrl: string, rowCount?: number): void {
         this._url = defaultUrl;

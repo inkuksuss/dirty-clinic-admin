@@ -16,7 +16,7 @@ export default defineComponent({
         const today = ref<string>(moment(new Date()).format('YY.MM.DD'));
         const title = ref<string>();
         const content = ref<string>();
-        const modules: unknown = {
+        const modules = {
             name: 'imageUploader',
             module: ImageUploader,
             options: {

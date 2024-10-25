@@ -1,6 +1,6 @@
 <script lang="ts">
-import { RouterLink, RouterView } from 'vue-router';
-import { computed, defineComponent, onMounted, onUnmounted } from 'vue';
+import { RouterLink, RouterView, useRoute } from 'vue-router';
+import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from 'vue';
 import ClinicHeader from '@/components/common/ClinicHeader.vue';
 import { useStore } from '@/stores/store';
 import ClinicPopup from '@/components/common/ClinicPopup.vue';
@@ -10,7 +10,9 @@ export default defineComponent({
     components: { ClinicPopup, ClinicHeader },
     setup() {
         const store = useStore();
+        const route = useRoute();
         const compOpenPopup = computed(() => store.openPopup);
+        const openHeader = ref<boolean>(false);
 
         const handleResize = () => {
             const clientWidth = document.documentElement.clientWidth;
@@ -20,15 +22,21 @@ export default defineComponent({
 
         onMounted(() => {
             window.addEventListener('resize', handleResize);
+            openHeader.value = route.fullPath !== '/';
         });
 
         onUnmounted(() => {
             window.removeEventListener('resize', handleResize);
         });
 
+        watch(route, () => {
+            openHeader.value = route.fullPath !== '/';
+        });
+
         return {
             RouterLink,
             compOpenPopup,
+            openHeader,
             RouterView
         };
     }
@@ -36,7 +44,7 @@ export default defineComponent({
 </script>
 
 <template>
-    <clinic-header></clinic-header>
+    <clinic-header v-if="openHeader"></clinic-header>
     <router-view />
     <clinic-popup v-if="compOpenPopup !== null"></clinic-popup>
 </template>

@@ -2,15 +2,10 @@
 import { computed, defineComponent } from 'vue';
 import { useStore } from '@/stores/store';
 import { PopupType } from '@/utils/types';
-import PaymentPopup from '@/components/popup/PaymentPopup.vue';
-
-type FooterCategory = {
-    title: string;
-};
 
 export default defineComponent({
     name: 'ClinicPopup',
-    components: { PaymentPopup },
+    components: { },
     setup() {
         const store = useStore();
         const compPopupType = computed(() => store.openPopup);
@@ -38,6 +33,5 @@ export default defineComponent({
             class="popup-bg flex-center bg-black opacity-55 w-full h-full"
             @click="handleClickBg"
         ></div>
-        <payment-popup v-if="compPopupType === PopupType.RESERVATION_PAYMENT"></payment-popup>
     </div>
 </template>

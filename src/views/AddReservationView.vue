@@ -9,6 +9,7 @@ import ClinicTextArea from '@/components/common/ClinicTextArea.vue';
 import ClinicDate from '@/components/common/ClinicDate.vue';
 import ClinicSelect from '@/components/common/ClinicSelect.vue';
 import { getApiInstance } from '@/utils/api';
+import router from '@/router';
 
 export default defineComponent({
     components: { ClinicSelect, ClinicDate, ClinicTextArea, ClinicInput, ClinicTopBar },
@@ -88,8 +89,8 @@ export default defineComponent({
                 return;
             }
 
-            if (!Number.isInteger(parseFloat(footage.value))) {
-                window.alert('공급면적은 정수만 가능합니다.');
+            if (footage.value?.slice(-1) === '.') {
+                window.alert('공급면적 형식이 숫자가 아닙니다.');
                 return;
             }
 
@@ -137,9 +138,9 @@ export default defineComponent({
             getApiInstance()
                 .post(`/admin/reservation/add`, data)
                 .then((res) => {
-                    console.log(res);
                     if (res.data.code === 0) {
                         window.alert('저장되었습니다.');
+                        router.push('/reservation');
                     } else {
                         window.alert(res.data.message);
                     }

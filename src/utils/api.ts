@@ -31,6 +31,7 @@ axiosInstance.interceptors.response.use(
         if (response.data.code === 9) {
             window.alert('토큰이 만료되어 로그인 페이지로 이동합니다.');
             window.location.href = '/';
+            // await useRouter().push('/');
         }
         return response;
     },

@@ -133,7 +133,7 @@ export default defineComponent({
 <template>
     <clinic-top-bar></clinic-top-bar>
     <div class="review-wrapper bg-[--bg-color] ml-[22%] px-[20px] flex items-center flex-col">
-        <div class="review-contents max-w-[900px] w-full bg-[--color-white] rounded-[8px]">
+        <div class="review-contents min-w-[900px] w-full bg-[--color-white] rounded-[8px]">
             <div class="title-wrapper flex w-full justify-between items-center p-[20px]">
                 <div class="font-[700] text-[22px]">후기 관리</div>
                 <div class="flex justify-end items-center">
@@ -147,7 +147,7 @@ export default defineComponent({
                         class="w-[62px] h-[40px] border-[1px] bg-[--color-main-blue] rounded-[4px] flex-center"
                         @click="doSave"
                     >
-                        <span class="text-[14px] font-[600] text-[--color-white]">저장</span>
+                        <span class="text-[14px] font-[600] text-[--color-white]">등록</span>
                     </div>
                 </div>
             </div>
@@ -184,37 +184,35 @@ export default defineComponent({
                         />
                         <label for="check_all"></label>
                     </div>
-                    <div class="w-full flex justify-start items-center">
+                    <div class="w-full flex items-center">
                         <div
-                            class="w-[64px] text-center text-[14px] font-[400] text-[--color-text-white-gray]"
+                            class="min-w-[64px] text-center text-[14px] font-[400] text-[--color-text-white-gray]"
                         >
                             번호
                         </div>
-                        <div
-                            class="w-[500px] text-[14px] font-[400] text-[--color-text-white-gray]"
-                        >
+                        <div class="flex-1 text-[14px] font-[400] text-[--color-text-white-gray]">
                             게시글 제목
                         </div>
                         <div
-                            class="w-[126px] text-center text-[14px] font-[400] text-[--color-text-white-gray]"
+                            class="min-w-[126px] w-[126px] text-center text-[14px] font-[400] text-[--color-text-white-gray]"
                         >
                             게시일
                         </div>
                         <div
-                            class="w-[126px] text-center text-[14px] font-[400] text-[--color-text-white-gray]"
+                            class="min-w-[126px] w-[126px] text-center text-[14px] font-[400] text-[--color-text-white-gray]"
                         >
                             작성자명
                         </div>
                     </div>
                 </div>
 
-                <div v-if="reviewList.length > 0" class="body-list w-full">
+                <div v-if="reviewList.length > 0" class="body-list w-full pb-[30px]">
                     <div
                         v-for="(review, idx) in reviewList"
                         :key="review.id"
-                        class="body-content py-[14px] flex items-center cursor-pointer justify-between px-[25px]"
+                        class="body-content py-[14px] flex items-center cursor-pointer justify-start px-[25px] w-full"
                     >
-                        <div class="w-[45px] flex justify-start items-center">
+                        <div class="min-w-[45px] w-[45px] flex justify-start items-center">
                             <input
                                 class="w-[20px] h-[20px]"
                                 :id="'check_one_' + idx"
@@ -223,29 +221,31 @@ export default defineComponent({
                             />
                             <label :for="'check_one_' + idx"></label>
                         </div>
-                        <div
-                            @click="() => handleClickRow(review.id)"
-                            class="flex justify-between w-full"
-                        >
-                            <div
-                                class="w-[64px] min-w-[64px] text-[14px] font-[400] leading-[17px] text-[--color-text-black] text-center flex items-center justify-center"
-                            >
-                                <span>{{ (currentPageIdx - 1) * 7 + idx + 1 }}</span>
+                        <div @click="() => handleClickRow(review.id)" class="flex justify-between w-[calc(100%_-_45px)]">
+                            <div class="flex min-w-[calc(100%_-_300px)] w-[calc(100%_-_300px)]">
+                                <div
+                                    class="min-w-[64px] text-[14px] font-[400] leading-[17px] text-[--color-text-black] text-center flex items-center justify-center"
+                                >
+                                    <span>{{ (currentPageIdx - 1) * 7 + idx + 1 }}</span>
+                                </div>
+                                <div
+                                    class="flex-1 max-w-[calc(100%_-_64px)] text-[14px] font-[400] leading-[17px] text-[--color-text-black] flex items-center justify-start"
+                                >
+                                    <span class="truncate w-full">{{ review.title }}</span>
+                                </div>
                             </div>
-                            <div
-                                class="w-[500px] max-w-[500px] text-[14px] font-[400] leading-[17px] text-[--color-text-black] text-center flex items-center justify-start"
-                            >
-                                <span class="truncate w-full">{{ review.title }}</span>
-                            </div>
-                            <div
-                                class="w-[126px] min-w-[64px] text-[14px] font-[400] leading-[17px] text-[--color-text-black] text-center flex items-center justify-center"
-                            >
-                                <span>{{ moment(review.created).format('YY.MM.DD') }}</span>
-                            </div>
-                            <div
-                                class="w-[126px] max-w-[126px] text-[14px] font-[400] leading-[17px] text-[--color-text-black] text-center flex items-center justify-center"
-                            >
-                                <span class="truncate w-full">{{ review.creatorName }}</span>
+
+                            <div class="flex">
+                                <div
+                                    class="min-w-[126px] w-[126px] text-[14px] font-[400] leading-[17px] text-[--color-text-black] text-center flex items-center justify-center"
+                                >
+                                    <span>{{ moment(review.created).format('YY.MM.DD') }}</span>
+                                </div>
+                                <div
+                                    class="min-w-[126px] max-w-[126px] text-[14px] font-[400] leading-[17px] text-[--color-text-black] flex items-center justify-center"
+                                >
+                                    <span class="truncate w-full">{{ review.creatorName }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>

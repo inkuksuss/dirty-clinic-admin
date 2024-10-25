@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { clearLocalStorage, loadLocalStorage, removeLocalStorage } from '@/utils/common';
+import { CONSTANTS } from '../../constants';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,11 +48,23 @@ const router = createRouter({
     ]
 });
 
-// router.beforeEach((to, from, next) => {
-//     getCookie('');
-//     console.log('to = ' + JSON.stringify(to));
-//     console.log('from = ' + JSON.stringify(from));
-//     console.log('next = ' + JSON.stringify(next));
-// });
+router.beforeEach((to, from, next) => {
+    if (to.path === '/') {
+        if (loadLocalStorage(CONSTANTS.KEY.UT)) {
+            removeLocalStorage(CONSTANTS.KEY.UT);
+            next();
+        } else {
+            next();
+        }
+    } else {
+        if (loadLocalStorage(CONSTANTS.KEY.UT)) {
+            next();
+        } else {
+            next('/');
+        }
+    }
+
+    // next();
+});
 
 export default router;
