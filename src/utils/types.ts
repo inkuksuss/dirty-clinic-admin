@@ -35,21 +35,10 @@ export type ReservationAmountSummary = {
     paymentCreated: Date;
 };
 
-export type Product = {
-    id: number;
-    serviceId: number;
-    structureId: number;
-    baseAmount: number;
-    depositAmount: number;
-    description: string;
-    expansion: string;
-    maxFootage: number;
-    minFootage: number;
-    perAmount: number;
-    toiletCount: number;
-    verandaCount: number;
-    created: string;
-    updated: string;
+export type DisableDay = {
+    disableDayId: number;
+    targetDay: string;
+    created: Date;
 };
 
 export type ReservationPayment = {

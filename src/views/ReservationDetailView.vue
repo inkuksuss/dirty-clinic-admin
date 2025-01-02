@@ -108,7 +108,12 @@ export default defineComponent({
             }
 
             getApiInstance()
-                .post(`/admin/reservation/modify`, reservationDetail.value)
+                .post(
+                    `/admin/reservation/modify`,
+                    Object.assign({}, reservationDetail.value, {
+                        targetDate: moment(reservationDetail.value?.targetDate).format('YYYY-MM-DD')
+                    })
+                )
                 .then((res) => {
                     if (res.data.code === 0) {
                         window.alert('저장되었습니다.');
@@ -299,7 +304,6 @@ export default defineComponent({
                             '/common/summary?type=service_type'
                         );
                         if (serviceRes.data.code === 0) {
-                            console.log(serviceRes);
                             serviceSelectList.value = serviceRes.data.data.map(
                                 (v: CommonCodeType) => {
                                     return { name: v.name, value: v.id.toString() };

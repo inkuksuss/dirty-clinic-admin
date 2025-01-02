@@ -123,7 +123,7 @@ export default defineComponent({
                 username: username.value,
                 phoneNumber: phoneNumber.value,
                 address: address.value,
-                targetDate: targetDate.value,
+                targetDate: moment(targetDate.value).format("YYYY-MM-DD"),
                 targetTime: targetTime.value,
                 reservationAdminMemo: reservationAdminMemo.value,
                 serviceId: serviceId.value,

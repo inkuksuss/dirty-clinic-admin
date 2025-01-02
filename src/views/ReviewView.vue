@@ -76,6 +76,9 @@ export default defineComponent({
 
         const handleClickPageArrow = async (isLeft: boolean) => {
             let query = '';
+            if (lastSearchValue.value && lastSearchValue.value.trim() !== '') {
+                query += `&searchValue=${lastSearchValue.value}`;
+            }
             if (isLeft) await getPageManager().goPrevChapter(query);
             else await getPageManager().goNextChapter(query);
             searchValue.value = lastSearchValue.value;
@@ -86,6 +89,9 @@ export default defineComponent({
 
         const handleClickPageNumber = async (v: number) => {
             let query = '';
+            if (lastSearchValue.value && lastSearchValue.value.trim() !== '') {
+                query += `&searchValue=${lastSearchValue.value}`;
+            }
             await getPageManager().movePage(v, query);
             searchValue.value = lastSearchValue.value;
             pageViewList.value = getPageManager().pageList;
@@ -221,7 +227,10 @@ export default defineComponent({
                             />
                             <label :for="'check_one_' + idx"></label>
                         </div>
-                        <div @click="() => handleClickRow(review.id)" class="flex justify-between w-[calc(100%_-_45px)]">
+                        <div
+                            @click="() => handleClickRow(review.id)"
+                            class="flex justify-between w-[calc(100%_-_45px)]"
+                        >
                             <div class="flex min-w-[calc(100%_-_300px)] w-[calc(100%_-_300px)]">
                                 <div
                                     class="min-w-[64px] text-[14px] font-[400] leading-[17px] text-[--color-text-black] text-center flex items-center justify-center"

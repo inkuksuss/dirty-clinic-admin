@@ -61,7 +61,6 @@ export class PageManager<T> implements PageManagerInterface<T> {
                 for (let i = 1; i <= lastPageIdx; i++) {
                     this._pageList.push(i);
                 }
-                console.log(res);
             } else {
                 if (this._isDebug) console.log(res);
             }

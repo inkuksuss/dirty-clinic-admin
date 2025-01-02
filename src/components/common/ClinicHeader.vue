@@ -23,7 +23,8 @@ export default defineComponent({
         const categoryList = ref<Array<Category>>([
             { title: '예약 관리', isSelect: false, link: '/reservation' },
             { title: '예약금 관리', isSelect: false, link: '/amount' },
-            { title: '후기 관리', isSelect: false, link: '/review' }
+            { title: '후기 관리', isSelect: false, link: '/review' },
+            { title: '날짜 관리', isSelect: false, link: '/calendar' }
         ]);
 
         const handleClick = (category: Category) => {
@@ -108,7 +109,7 @@ export default defineComponent({
                         src="@/assets/images/icons/credit_card@1x.svg"
                     />
                 </div>
-                <div v-else class="img-wrapper w-[25px] h-[25px] mx-[10px]">
+                <div v-else-if="idx === 2" class="img-wrapper w-[25px] h-[25px] mx-[10px]">
                     <img
                         v-if="category.isSelect"
                         class="w-full h-full"
@@ -119,6 +120,14 @@ export default defineComponent({
                         class="w-full h-full"
                         src="@/assets/images/icons/chart_bar@1x.svg"
                     />
+                </div>
+                <div v-else class="img-wrapper w-[25px] h-[25px] mx-[10px]">
+                    <img
+                        v-if="category.isSelect"
+                        class="w-full h-full"
+                        src="@/assets/images/icons/calendar_active@1x.svg"
+                    />
+                    <img v-else class="w-full h-full" src="@/assets/images/icons/calendar@1x.svg" />
                 </div>
                 <div
                     class="name text-[16px] font-[600] leading-[19px] text-[--color-text-white-gray]"

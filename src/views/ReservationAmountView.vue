@@ -174,7 +174,6 @@ export default defineComponent({
                     )}&endDate=${moment(endDate.value).format('YYYY-MM-DD')}`
                 )
                 .then((res) => {
-                    console.log(res);
                     if (res.data.code === 0) {
                         totalAmount.value = res.data.data.toLocaleString();
                     } else {

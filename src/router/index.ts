@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { clearLocalStorage, loadLocalStorage, removeLocalStorage } from '@/utils/common';
+import { loadLocalStorage, removeLocalStorage } from '@/utils/common';
 import { CONSTANTS } from '../../constants';
 
 const router = createRouter({
@@ -44,6 +44,11 @@ const router = createRouter({
             path: '/review/:id',
             name: 'reviewDetail',
             component: () => import('@/views/ReviewDetailView.vue')
+        },
+        {
+            path: '/calendar',
+            name: 'calendar',
+            component: () => import('@/views/CalendarView.vue')
         }
     ]
 });
